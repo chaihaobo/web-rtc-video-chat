@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC 视频会议</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>WebRTC 视频会议</h1>
+        
+        <div class="video-grid" id="videoGrid">
+            <div class="video-box local-video">
+                <video id="localVideo" autoplay playsinline muted></video>
+                <p>我的视频</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startButton">开始通话</button>
+            <button id="toggleVideoButton" disabled>关闭视频</button>
+            <button id="toggleAudioButton" disabled>关闭音频</button>
+        </div>
+
+        <div class="connection-info">
+            <h2>会议信息</h2>
+            <div class="room-status">
+                <p>在线人数：<span id="userCount">0</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
