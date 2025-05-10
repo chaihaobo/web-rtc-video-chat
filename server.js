@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname)));
 // WebSocket 连接处理
 wss.on('connection', (ws) => {
     let clientId = null;
+    let nickname = null;
 
     ws.on('message', (message) => {
         const data = JSON.parse(message);
@@ -33,33 +34,39 @@ wss.on('connection', (ws) => {
             case 'register':
                 // 注册新客户端
                 clientId = data.id;
-                clients.set(clientId, {ws});
+                nickname = data.nickname || `用户${clientId.substring(0, 6)}`;
+                clients.set(clientId, {ws, nickname});
                 globalRoom.add(clientId);
-                console.log(`客户端 ${clientId} 已连接`);
+                console.log(`客户端 ${clientId} (${nickname}) 已连接`);
 
                 // 通知房间内其他用户有新用户加入
                 globalRoom.forEach(memberId => {
-                    // if (memberId !== clientId) {
-                    //     const memberWs = clients.get(memberId).ws;
-                    //     memberWs.send(JSON.stringify({
-                    //         type: 'user-joined',
-                    //         userId: clientId
-                    //     }));
-                    // }
                     const memberWs = clients.get(memberId).ws;
                     const roomMembers = Array.from(globalRoom).filter(id => id !== memberId);
                     memberWs.send(JSON.stringify({
                         type: 'room-users',
-                        users: roomMembers
+                        users: roomMembers.map(id => ({
+                            id,
+                            nickname: clients.get(id).nickname
+                        }))
                     }));
                 });
+                break;
 
-                // 发送房间内现有用户列表给新用户
-                // const roomMembers = Array.from(globalRoom).filter(id => id !== clientId);
-                // ws.send(JSON.stringify({
-                //     type: 'room-users',
-                //     users: roomMembers
-                // }));
+            case 'update-nickname':
+                if (clientId) {
+                    nickname = data.nickname;
+                    clients.get(clientId).nickname = nickname;
+                    // 广播昵称更新
+                    globalRoom.forEach(memberId => {
+                        const memberWs = clients.get(memberId).ws;
+                        memberWs.send(JSON.stringify({
+                            type: 'nickname-updated',
+                            userId: clientId,
+                            nickname: nickname
+                        }));
+                    });
+                }
                 break;
 
             case 'offer':
@@ -71,6 +78,7 @@ wss.on('connection', (ws) => {
                     targetClient.ws.send(JSON.stringify({
                         type: data.type,
                         sender: clientId,
+                        from: data.from,
                         data: data.data
                     }));
                 } else {
