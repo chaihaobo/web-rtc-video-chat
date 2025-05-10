@@ -1,5 +1,5 @@
 const express = require('express');
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const WebSocket = require('ws');
 const path = require('path');
@@ -12,7 +12,7 @@ const options = {
     // cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem'))
 };
 
-const server = https.createServer(options, app);
+const server = http.createServer( app);
 const wss = new WebSocket.Server({server});
 
 // 存储全局房间和客户端信息
@@ -113,7 +113,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT,"0.0.0.0", () => {
     console.log(`HTTPS 服务器运行在 https://localhost:${PORT}`);
 }); 
