@@ -8,8 +8,8 @@ const app = express();
 
 // 读取SSL证书
 const options = {
-    key: fs.readFileSync(path.join(__dirname, 'certs', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem'))
+    // key: fs.readFileSync(path.join(__dirname, 'certs', 'key.pem')),
+    // cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem'))
 };
 
 const server = https.createServer(options, app);
@@ -113,7 +113,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 server.listen(PORT, () => {
     console.log(`HTTPS 服务器运行在 https://localhost:${PORT}`);
 }); 
