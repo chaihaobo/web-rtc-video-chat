@@ -114,6 +114,6 @@ wss.on('connection', (ws) => {
 });
 
 const PORT = 3000;
-server.listen(PORT, () => {
+server.listen(PORT,"0.0.0.0", () => {
     console.log(`HTTPS 服务器运行在 https://localhost:${PORT}`);
 }); 
